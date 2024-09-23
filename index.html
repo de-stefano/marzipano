@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marzipano Hotspot Example</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/marzipano/dist/marzipano.css">
+    <script src="https://cdn.jsdelivr.net/npm/marzipano/dist/marzipano.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        #pano {
+            width: 100%;
+            height: 100vh; /* Occupare tutta l'altezza del viewport */
+        }
+        .hotspot {
+            width: 20px;
+            height: 20px;
+            background-color: red; /* Colore per il hotspot */
+            border-radius: 50%;
+            position: absolute;
+            transform: translate(-50%, -50%);
+            z-index: 10; /* Assicurati che sia sopra le altre parti */
+        }
+        .popup {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 20; /* Assicurati che sia sopra il panorama */
+        }
+        #vrButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            z-index: 30; /* Assicurati che sia sopra il popup */
+        }
+    </style>
+</head>
+<body>
+    <div id="pano"></div>
+    
+    <div id="hotspot" class="hotspot" style="left: 50%; top: 30%; cursor: pointer;"></div>
+    
+    <button id="vrButton">Entrare in VR</button>
+    
+    <script>
+        var viewer = new Marzipano.Viewer(document.getElementById('pano'));
+        var source = Marzipano.ImageUrlSource.fromString('https://de-stefano.github.io/img360/img-pannellum/piazza-san-giacomo.jpg'); // Sostituisci con il link corretto
+        var geometry = new Marzipano.EquirectGeometry([{ width: 4096 }]);
+        var view = new Marzipano.RectilinearView();
+        var scene = viewer.createScene({ source: source, geometry: geometry, view: view });
+        scene.switchTo();
+        
+        // Aggiungere il click per il popup
+        document.getElementById('hotspot').addEventListener('click', function() {
+            var popup = document.createElement('div');
+            popup.className = 'popup';
+            popup.innerHTML = `
+                <h2>Titolo del Popup</h2>
+                <p>Contenuto del popup, come testo o audio.</p>
+                <audio controls>
+                    <source src="path/to/audio.mp3" type="audio/mpeg">
+                    Il tuo browser non supporta l'elemento audio.
+                </audio>
+                <button id="closePopup">Chiudi</button>
+            `;
+            document.body.appendChild(popup);
+
+            // Gestire la chiusura del popup
+            document.getElementById('closePopup').addEventListener('click', function() {
+                document.body.removeChild(popup);
+            });
+        });
+
+        // Pulsante VR
+        document.getElementById('vrButton').addEventListener('click', function() {
+            // Attiva fullscreen
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen().then(() => {
+                    viewer.enableVR();
+                }).catch(err => {
+                    console.error(`Errore durante l'entrata in fullscreen: ${err}`);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
