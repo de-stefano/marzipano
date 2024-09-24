@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>A-Frame 360° VR Example</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <!-- A-Frame Scene -->
+    <a-scene>
+      <!-- Sfondo 360 gradi -->
+      <a-sky src="https://www.marzipano.net/media/equirect/angra.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- Hotspot con icona personalizzata -->
+      <a-image src="https://www.svgrepo.com/show/103678/info.svg" 
+               position="1 2 -3" 
+               width="0.5" 
+               height="0.5" 
+               class="hotspot" 
+               event-set__click="_event: click; material.color: #0000FF" 
+               cursor="pointer"
+               id="hotspot">
+      </a-image>
+
+      <!-- Popup all'interno della scena -->
+      <a-entity id="popup" visible="false" position="0 1.6 -2">
+        <!-- Sfondo del popup -->
+        <a-plane width="1.5" height="1" color="#FFFFFF"></a-plane>
+
+        <!-- Testo nel popup -->
+        <a-text value="Questo è un popup!" color="#000000" width="1.4" position="0 0.5 0"></a-text>
+
+        <!-- Immagine nel popup -->
+        <a-image src="https://via.placeholder.com/150" width="0.8" height="0.4" position="0 0.1 0"></a-image>
+
+        <!-- Aggiungi un video -->
+        <a-video src="https://www.w3schools.com/html/mov_bbb.mp4" 
+                 width="1.2" height="0.6" 
+                 position="0 -0.4 0" 
+                 autoplay="false" 
+                 id="popup-video" 
+                 class="clickable">
+        </a-video>
+
+        <!-- Aggiungi un pulsante per avviare l'audio -->
+        <a-plane position="0 -1 0" width="1.4" height="0.2" color="#0000FF" class="clickable" id="audio-btn">
+          <a-text value="Ascolta l'audio" color="#FFFFFF" align="center"></a-text>
+          <a-sound src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" id="popup-audio"></a-sound>
+        </a-plane>
+
+        <!-- Pulsante Chiudi -->
+        <a-plane id="close-btn" width="0.5" height="0.2" color="#FF0000" position="0 -1.5 0">
+          <a-text value="Chiudi" color="#FFFFFF" align="center"></a-text>
+        </a-plane>
+      </a-entity>
+
+      <!-- Modalità VR -->
+      <a-entity position="0 1.6 0">
+        <a-camera wasd-controls-enabled="false" look-controls="true">
+          <!-- Cursore VR con fusione (gaze-based interaction) -->
+          <a-cursor fuse="true" fuse-timeout="1500" color="#FF0000"></a-cursor>
+        </a-camera>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      // Seleziona gli elementi del popup e il pulsante chiudi
+      const popup = document.getElementById('popup');
+      const closeButton = document.getElementById('close-btn');
+      const hotspot = document.getElementById('hotspot');
+      const video = document.getElementById('popup-video');
+      const audioBtn = document.getElementById('audio-btn');
+      const audio = document.getElementById('popup-audio');
+
+      // Mostra il popup quando l'hotspot viene cliccato
+      hotspot.addEventListener('click', function () {
+        popup.setAttribute('visible', 'true');  // Mostra il popup
+      });
+
+      // Chiudi il popup quando il pulsante "Chiudi" viene cliccato
+      closeButton.addEventListener('click', function () {
+        popup.setAttribute('visible', 'false');  // Nascondi il popup
+        // Ferma sia l'audio che il video quando il popup viene chiuso
+        audio.components.sound.stopSound();
+        video.pause();
+      });
+
+      // Riproduzione video tramite fissazione visiva
+      video.addEventListener('click', function () {
+        if (video.paused) {
+          video.play();  // Riproduci il video se è in pausa
+        } else {
+          video.pause();  // Metti in pausa il video se è già in riproduzione
+        }
+      });
+
+      // Attiva o disattiva l'audio tramite fissazione visiva (gaze)
+      audioBtn.addEventListener('click', function () {
+        if (!audio.components.sound.isPlaying) {
+          audio.components.sound.playSound();  // Avvia l'audio
+        } else {
+          audio.components.sound.stopSound();  // Ferma l'audio
+        }
+      });
+    </script>
+  </body>
+</html>
