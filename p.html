@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>A-Frame 360° VR Example</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <!-- A-Frame Scene -->
+    <a-scene>
+      <!-- Aggiungi il componente VR -->
+      <a-sky src="https://www.marzipano.net/media/equirect/angra.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- Hotspot con evento di clic -->
+      <a-sphere position="1 2 -3" radius="0.3" color="#FF0000" class="hotspot" event-set__click="_event: click; material.color: #0000FF" cursor="pointer"></a-sphere>
+
+      <!-- Modalità VR -->
+      <a-entity position="0 1.6 0">
+        <a-camera wasd-controls-enabled="false" look-controls="true">
+          <a-cursor color="#FF0000"></a-cursor>
+        </a-camera>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      // Evento per il clic sullo sphere (hotspot)
+      document.querySelector('.hotspot').addEventListener('click', function() {
+        alert("Hotspot cliccato! Qui puoi aprire un popup o caricare contenuti.");
+      });
+    </script>
+  </body>
+</html>
