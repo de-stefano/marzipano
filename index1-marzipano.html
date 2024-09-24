@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marzipano VR Example</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/marzipano/dist/marzipano.css">
+    <script src="https://cdn.jsdelivr.net/npm/marzipano/dist/marzipano.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        #pano {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+        .hotspot {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background-color: red;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        #popup {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 10px;
+        }
+        #popup button {
+            margin-top: 10px;
+        }
+        #close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        #vr-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: blue;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="pano"></div>
+
+    <!-- Popup contenente l'audio -->
+    <div id="popup">
+        <button id="close-btn">Close</button>
+        <h2>Contenuto Hotspot</h2>
+        <!-- Inserimento audio -->
+        <audio controls>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+            Il tuo browser non supporta l'elemento audio.
+        </audio>
+    </div>
+
+    <!-- Pulsante per la modalità VR -->
+    <button id="vr-button">Visualizza in VR</button>
+
+    <script>
+        // Creazione del viewer
+        var viewer = new Marzipano.Viewer(document.getElementById('pano'));
+
+        // Sorgente dell'immagine
+        var source = Marzipano.ImageUrlSource.fromString('https://www.marzipano.net/media/equirect/angra.jpg');
+
+        // Geometria e vista
+        var geometry = new Marzipano.EquirectGeometry([{ width: 4096 }]);
+        var view = new Marzipano.RectilinearView();
+        var scene = viewer.createScene({ source: source, geometry: geometry, view: view });
+
+        // Aggiunta degli hotspot
+        var hotspotElement = document.createElement('div');
+        hotspotElement.className = 'hotspot';
+        scene.hotspotContainer().createHotspot(hotspotElement, { yaw: Math.PI / 4, pitch: 0 });
+
+        // Funzione per mostrare il popup
+        hotspotElement.addEventListener('click', function() {
+            document.getElementById('popup').style.display = 'block';
+        });
+
+        // Funzione per chiudere il popup
+        document.getElementById('close-btn').addEventListener('click', function() {
+            document.getElementById('popup').style.display = 'none';
+        });
+
+        // Funzione per gestire la modalità VR
+        document.getElementById('vr-button').addEventListener('click', function() {
+            if (navigator.xr) {
+                navigator.xr.isSessionSupported('immersive-vr').then(function(supported) {
+                    if (supported) {
+                        navigator.xr.requestSession('immersive-vr').then(function(session) {
+                            document.body.appendChild(viewer.domElement); // Aggiungi il canvas al DOM se necessario
+                            viewer.domElement.requestFullscreen();
+                            // Logica VR da eseguire quando si entra in modalità VR
+                            alert('Modalità VR attivata! Indossa il visore per vedere il panorama.');
+                        }).catch(function(error) {
+                            console.error('Impossibile avviare la modalità VR: ', error);
+                        });
+                    } else {
+                        alert('Il tuo dispositivo non supporta la modalità VR.');
+                    }
+                });
+            } else {
+                alert('Il browser non supporta WebXR.');
+            }
+        });
+
+        // Mostra la scena
+        scene.switchTo();
+    </script>
+</body>
+</html>
