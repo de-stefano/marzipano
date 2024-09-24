@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>A-Frame 360° VR Example</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <style>
+      /* Stili per il popup */
+      .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        padding: 20px;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        width: 300px;
+        text-align: center;
+      }
+
+      .popup img {
+        max-width: 100%;
+        height: auto;
+      }
+
+      .popup audio {
+        width: 100%;
+      }
+
+      .close-btn {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #FF0000;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* Sfondo scuro quando il popup è attivo */
+      .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 999;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- A-Frame Scene -->
+    <a-scene>
+      <!-- Aggiungi il componente VR -->
+      <a-sky src="https://www.marzipano.net/media/equirect/angra.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- Hotspot personalizzato qui sotto con un'icona (puoi cambiare la src per usare la tua immagine) -->
+      <a-image src="https://de-stefano.github.io/img360/img-pannellum/icon-info.png" 
+               position="1 2 -3" 
+               width="0.3" 
+               height="0.3" 
+               class="hotspot" 
+               event-set__click="_event: click; material.color: #0000FF" 
+               cursor="pointer">
+      </a-image>
+
+      <!-- Modalità VR -->
+      <a-entity position="0 1.6 0">
+        <a-camera wasd-controls-enabled="false" look-controls="true">
+          <a-cursor color="#FF0000"></a-cursor>
+        </a-camera>
+      </a-entity>
+    </a-scene>
+
+    <!-- Popup nascosto che verrà visualizzato al clic -->
+    <div class="overlay"></div>
+    <div class="popup">
+      <h2>Contenuto del Popup</h2>
+      <p>Questo è un testo che appare nel popup.</p>
+      <img src="https://via.placeholder.com/150" alt="Immagine di esempio">
+      <audio controls>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        Il tuo browser non supporta l'elemento audio.
+      </audio>
+      <button class="close-btn">Chiudi</button>
+    </div>
+
+    <script>
+      // Funzione per mostrare il popup
+      function showPopup() {
+        document.querySelector('.popup').style.display = 'block';
+        document.querySelector('.overlay').style.display = 'block';
+      }
+
+      // Funzione per nascondere il popup
+      function closePopup() {
+        document.querySelector('.popup').style.display = 'none';
+        document.querySelector('.overlay').style.display = 'none';
+      }
+
+      // Evento per il clic sull'hotspot
+      document.querySelector('.hotspot').addEventListener('click', function() {
+        showPopup();
+      });
+
+      // Evento per chiudere il popup
+      document.querySelector('.close-btn').addEventListener('click', function() {
+        closePopup();
+      });
+
+      // Cliccando sull'overlay si chiude il popup
+      document.querySelector('.overlay').addEventListener('click', function() {
+        closePopup();
+      });
+    </script>
+  </body>
+</html>
