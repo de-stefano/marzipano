@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VR 360 Image with Hotspots</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <style>
+      .hotspot-text {
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        max-width: 300px;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene>
+      <!-- Immagine a 360 gradi -->
+      <a-sky src="https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg" rotation="0 -90 0"></a-sky>
+
+      <!-- Hotspot personalizzato con icona -->
+      <a-entity id="hotspot1" 
+                geometry="primitive: plane; height: 0.4; width: 0.4" 
+                material="src: https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png; transparent: true"
+                position="1 1 -3"
+                class="clickable">
+      </a-entity>
+
+      <!-- Pannello di testo nascosto di default -->
+      <a-entity id="info-panel1" visible="false" position="0 1.6 -2">
+        <a-plane color="black" height="1" width="1.5" position="0 0 0.1"></a-plane>
+        <a-text 
+          class="hotspot-text"
+          value="Qui c'è una descrizione dell'hotspot, con eventuali immagini e testo lungo che scorre."
+          width="1.4" position="-0.7 0.4 0.2">
+        </a-text>
+      </a-entity>
+
+      <!-- Camera con puntatore oculare -->
+      <a-entity camera look-controls>
+        <a-cursor
+          fuse="true"
+          fuse-timeout="1000"
+          geometry="primitive: ring; radiusInner: 0.01; radiusOuter: 0.02"
+          material="color: white; shader: flat"
+          position="0 0 -1">
+        </a-cursor>
+      </a-entity>
+
+      <!-- Sistema di eventi per mostrare/nascondere il pannello -->
+      <script>
+        // Aggiunta di un componente per ascoltare il click e modificare la visibilità del pannello
+        AFRAME.registerComponent('hotspot-listener', {
+          init: function () {
+            var hotspot = this.el;
+            var infoPanel = document.querySelector('#info-panel1');
+            
+            // Aggiunge un listener per l'evento click sull'hotspot
+            hotspot.addEventListener('click', function () {
+              // Verifica se il pannello è visibile
+              var isVisible = infoPanel.getAttribute('visible') === "true";
+              
+              // Alterna la visibilità del pannello
+              infoPanel.setAttribute('visible', !isVisible);
+            });
+          }
+        });
+
+        // Applica il componente di ascolto degli eventi all'hotspot
+        document.querySelector('#hotspot1').setAttribute('hotspot-listener', '');
+      </script>
+    </a-scene>
+  </body>
+</html>
