@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>VR 360 Image with Text Window</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <style>
+      .text-window {
+        position: absolute;
+        width: 300px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid #000;
+        border-radius: 10px;
+        padding: 10px;
+        display: none; /* Hidden by default */
+        overflow-y: auto; /* Enable vertical scrolling */
+      }
+
+      /* Style for the close button */
+      .close-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: #EF2D5E;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        padding: 5px;
+        cursor: pointer;
+      }
+
+      /* Set font size for text */
+      .small-text {
+        font-size: 0.8em; /* Smaller font size */
+      }
+    </style>
+  </head>
+  <body>
+    <a-scene>
+      <a-sky src="https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- Hotspot with custom icon -->
+      <a-image src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png" position="0 1.6 -3" scale="0.1 0.1 0.1" id="interactive-box"></a-image>
+
+      <a-entity id="text-window" class="text-window" position="0 1 -2.5">
+        <a-plane color="#FFF" width="1.5" height="1" position="0 0 0"></a-plane>
+        <button class="close-button" onclick="closeWindow()">X</button>
+        <a-text value="Questo è un testo informativo!\nPuoi aggiungere più testo qui per dimostrare la barra di scorrimento verticale.Questo è un testo informativo!\nPuoi aggiungere più testo qui per dimostrare la barra di scorrimento verticale.Questo è un testo informativo!\nPuoi aggiungere più testo qui per dimostrare la barra di scorrimento verticale.Questo è un testo informativo!\nPuoi aggiungere più testo qui per dimostrare la barra di scorrimento verticale.Questo è un testo informativo!\nPuoi aggiungere più testo qui per dimostrare la barra di scorrimento verticale.Questo è un testo informativo!\nPuoi aggiungere più testo qui per dimostrare la barra di scorrimento verticale.Questo è un testo informativo!\nPuoi aggiungere più testo qui per dimostrare la barra di scorrimento verticale.Questo è un testo informativo!\nPuoi aggiungere più testo qui per dimostrare la barra di scorrimento verticale.Questo è un testo informativo!\nPuoi aggiungere più testo qui per dimostrare la barra di scorrimento verticale.Questo è un testo informativo!\nPuoi aggiungere più testo qui per dimostrare la barra di scorrimento verticale." color="#000" position="-0.5 0.3 0.01" class="small-text"></a-text>
+        <a-image src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-doc1.png" position="0 0 -0.01" width="0.5" height="0.5"></a-image>
+      </a-entity>
+
+      <a-entity camera look-controls position="0 1.6 0">
+        <a-cursor id="cursor" color="#EF2D5E" fuse="true" fuse-timeout="500"></a-cursor>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      const textWindow = document.getElementById('text-window');
+      const interactiveBox = document.getElementById('interactive-box');
+      const cursor = document.getElementById('cursor');
+
+      // Function to close the window
+      function closeWindow() {
+        textWindow.style.display = "none"; // Hide the window
+      }
+
+      cursor.addEventListener('click', function () {
+        if (textWindow.style.display === "none") {
+          textWindow.style.display = "block"; // Show the window
+        } else {
+          closeWindow(); // Hide the window if it's already open
+        }
+      });
+
+      interactiveBox.addEventListener('mouseenter', function () {
+        cursor.setAttribute('color', '#EF2D5E'); // Change cursor color on hover
+      });
+
+      interactiveBox.addEventListener('mouseleave', function () {
+        cursor.setAttribute('color', '#FFF'); // Reset cursor color when not hovering
+      });
+    </script>
+  </body>
+</html>
