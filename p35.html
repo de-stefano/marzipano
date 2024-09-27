@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VR Testo Lungo, Immagine e Hotspot</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <!-- Piano per visualizzare il testo con scorrimento -->
+      <a-entity position="0 1.5 -3">
+        <a-plane color="#FFF" height="2" width="1"></a-plane>
+        <a-text
+          id="scrollable-text"
+          position="-0.45 0.9 0.01"
+          width="0.9"
+          value="Testo lungo...\nRiga 2...\nRiga 3...\nRiga 4...\nRiga 5...\nRiga 6...\nRiga 7...\nRiga 8...\nRiga 9...\nRiga 10...\nFine del testo."
+          align="left"
+          wrap-count="30"
+        ></a-text>
+      </a-entity>
+
+      <!-- Controlli per lo scorrimento -->
+      <a-box
+        id="scroll-up"
+        position="0.5 2 -3"
+        width="0.1"
+        height="0.1"
+        depth="0.1"
+        color="blue"
+      ></a-box>
+      <a-box
+        id="scroll-down"
+        position="0.5 1 -3"
+        width="0.1"
+        height="0.1"
+        depth="0.1"
+        color="blue"
+      ></a-box>
+
+      <!-- Inserire immagine -->
+      <a-image
+        src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-video1.png"
+        position="0 2 -3"
+        width="0.3"
+        height="0.3"
+      ></a-image>
+
+      <!-- Hotspot personalizzato -->
+      <a-image
+        src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-video1.png"
+        position="1 1.5 -3"
+        width="0.3"
+        height="0.3"
+      ></a-image>
+
+      <script>
+        let scrollOffset = 0;
+        const scrollableText = document.querySelector("#scrollable-text");
+        const scrollUp = document.querySelector("#scroll-up");
+        const scrollDown = document.querySelector("#scroll-down");
+
+        scrollUp.addEventListener("click", function () {
+          if (scrollOffset < 1) scrollOffset += 0.1;
+          scrollableText.setAttribute(
+            "position",
+            `-0.45 ${0.9 - scrollOffset} 0.01`
+          );
+        });
+
+        scrollDown.addEventListener("click", function () {
+          if (scrollOffset > -0.9) scrollOffset -= 0.1;
+          scrollableText.setAttribute(
+            "position",
+            `-0.45 ${0.9 - scrollOffset} 0.01`
+          );
+        });
+      </script>
+    </a-scene>
+  </body>
+</html>
