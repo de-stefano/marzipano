@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VR con Popup e Hotspot Multipli</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <!-- Caricamento dell'immagine a 360 gradi -->
+      <a-sky src="https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- Primo Hotspot -->
+      <a-image
+        id="hotspot1"
+        src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+        position="1 1.5 -3"
+        width="0.3"
+        height="0.3"
+        class="hotspot"
+      ></a-image>
+
+      <!-- Pop-up per il primo Hotspot -->
+      <a-entity id="popup-window1" visible="false" position="0 1.5 -2">
+        <a-plane color="#FFF" height="1.5" width="2"></a-plane>
+        
+        <a-text
+          id="popup-text1"
+          position="-0.9 0.5 0.01"
+          width="1.8"
+          value="Questo è un esempio di testo lungo per il primo hotspot."
+          color="#000000"
+          align="left"
+          wrap-count="30"
+        ></a-text>
+
+        <a-image
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-arrow-down1.png"
+          position="0 -0.6 0.01"
+          width="1"
+          height="0.5"
+        ></a-image>
+
+        <a-image
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+          position="0 0.8 0.01"
+          width="0.2"
+          height="0.2"
+          class="close-hotspot"
+        ></a-image>
+      </a-entity>
+
+      <!-- Secondo Hotspot -->
+      <a-image
+        id="hotspot2"
+        src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+        position="-1 1.5 -3"
+        width="0.3"
+        height="0.3"
+        class="hotspot"
+      ></a-image>
+
+      <!-- Pop-up per il secondo Hotspot -->
+      <a-entity id="popup-window2" visible="false" position="0 1.5 -2">
+        <a-plane color="#FFF" height="1.5" width="2"></a-plane>
+        
+        <a-text
+          id="popup-text2"
+          position="-0.9 0.5 0.01"
+          width="1.8"
+          value="Questo è un esempio di testo lungo per il secondo hotspot."
+          color="#000000"
+          align="left"
+          wrap-count="30"
+        ></a-text>
+
+        <a-image
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-arrow-down1.png"
+          position="0 -0.6 0.01"
+          width="1"
+          height="0.5"
+        ></a-image>
+
+        <a-image
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+          position="0 0.8 0.01"
+          width="0.2"
+          height="0.2"
+          class="close-hotspot"
+        ></a-image>
+      </a-entity>
+
+      <!-- Puntatore visivo -->
+      <a-entity camera look-controls>
+        <a-cursor
+          fuse="true"
+          fuse-timeout="1000"
+          color="blue"
+          raycaster="objects: .hotspot, .close-hotspot"
+        ></a-cursor>
+      </a-entity>
+
+      <script>
+        // Funzione per gestire la visibilità del popup
+        function setupHotspot(hotspotId, popupId) {
+          const hotspot = document.querySelector(hotspotId);
+          const popupWindow = document.querySelector(popupId);
+          const closeHotspot = popupWindow.querySelector(".close-hotspot");
+          
+          // Mostra il popup quando si fissa l'hotspot
+          hotspot.addEventListener("mouseenter", function () {
+            popupWindow.setAttribute("visible", "true");
+          });
+
+          // Nascondi il popup quando si fissa il pulsante Chiudi
+          closeHotspot.addEventListener("mouseenter", function () {
+            popupWindow.setAttribute("visible", "false");
+          });
+        }
+
+        // Configura i due hotspot
+        setupHotspot("#hotspot1", "#popup-window1");
+        setupHotspot("#hotspot2", "#popup-window2");
+      </script>
+    </a-scene>
+  </body>
+</html>
