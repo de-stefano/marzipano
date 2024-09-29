@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VR Immagine 360°, Pop-up con Gaze e Hotspot</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <!-- Caricamento dell'immagine a 360 gradi -->
+      <a-sky src="https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- Hotspot interattivo 1 -->
+      <a-image
+        id="hotspot1"
+        src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+        data-pitch="10"
+        data-yaw="45"
+        class="hotspot"
+        width="0.7"
+        height="0.7"
+      ></a-image>
+
+      <!-- Hotspot interattivo 2 -->
+      <a-image
+        id="hotspot2"
+        src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+        data-pitch="10"
+        data-yaw="100"
+        class="hotspot"
+        width="0.7"
+        height="0.7"
+      ></a-image>
+
+      <!-- Hotspot interattivo 3 -->
+      <a-image
+        id="hotspot3"
+        src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+        data-pitch="10"
+        data-yaw="-120"
+        class="hotspot"
+        width="0.7"
+        height="0.7"
+      ></a-image>
+
+      <!-- Finestra di popup -->
+      <a-entity id="popup-window" visible="false" position="0 1.5 -2">
+        <a-plane color="#FFF" height="1.5" width="2"></a-plane>
+        <a-text
+          id="popup-text"
+          position="-0.9 0.6 0.01"
+          width="1.8"
+          value="Questo è un esempio di testo lungo nel popup."
+          color="#000000"
+          align="left"
+          wrap-count="30"
+        ></a-text>
+
+        <!-- Pulsante Chiudi -->
+        <a-image
+          id="close-popup"
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+          position="0 0.8 0.01"
+          width="0.2"
+          height="0.2"
+          class="close-hotspot"
+        ></a-image>
+      </a-entity>
+
+      <!-- Puntatore visivo -->
+      <a-entity camera look-controls>
+        <a-cursor
+          fuse="true"
+          fuse-timeout="1000"
+          color="blue"
+          raycaster="objects: .hotspot, .close-hotspot"
+        ></a-cursor>
+      </a-entity>
+
+      <script>
+        // Funzione per convertire pitch e yaw in coordinate X, Y, Z
+        function convertPitchYawToPosition(pitch, yaw, radius = 3) {
+          const phi = (90 - pitch) * (Math.PI / 180);
+          const theta = (yaw + 180) * (Math.PI / 180);
+          const x = radius * Math.sin(phi) * Math.cos(theta);
+          const y = radius * Math.cos(phi);
+          const z = radius * Math.sin(phi) * Math.sin(theta);
+          return { x, y, z };
+        }
+
+        // Funzione per regolare la scala delle icone in base alla distanza dall'asse Z
+        function adjustScale(position) {
+          const distanceFromCenter = Math.abs(position.z);
+          const scaleFactor = 1 / (distanceFromCenter + 1); // Riduce la scala in base alla distanza
+          return `${scaleFactor} ${scaleFactor} 1`;
+        }
+
+        // Funzione per posizionare gli hotspot
+        function positionHotspots() {
+          document.querySelectorAll('.hotspot').forEach((hotspot) => {
+            const pitch = hotspot.getAttribute('data-pitch');
+            const yaw = hotspot.getAttribute('data-yaw');
+            const position = convertPitchYawToPosition(pitch, yaw);
+            hotspot.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+
+            // Regola dinamicamente la scala per evitare distorsioni
+            const scale = adjustScale(position);
+            hotspot.setAttribute('scale', scale);
+          });
+        }
+
+        positionHotspots(); // Posiziona gli hotspot al caricamento della scena
+
+        // Seleziona gli elementi del popup e gli hotspot
+        const hotspots = document.querySelectorAll('.hotspot');
+        const popupWindow = document.querySelector("#popup-window");
+        const closePopup = document.querySelector("#close-popup");
+
+        // Mostra il popup quando si guarda un hotspot
+        hotspots.forEach((hotspot) => {
+          hotspot.addEventListener("mouseenter", function () {
+            popupWindow.setAttribute("visible", "true");
+          });
+        });
+
+        // Nascondi il popup quando si guarda il pulsante Chiudi
+        closePopup.addEventListener("mouseenter", function () {
+          popupWindow.setAttribute("visible", "false");
+        });
+      </script>
+    </a-scene>
+  </body>
+</html>
