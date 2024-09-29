@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panorama a 360° interattivo con tracciamento dello sguardo</title>
+    <style>
+        .popup {
+            /* Stile della finestra pop-up */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid black;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="panorama"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/webgazer@0.8.1/dist/webgazer.min.js"></script>
+    <script>
+        // Variabili globali
+        let viewer;
+        let hotspots = []; // Array per memorizzare gli hotspot
+
+        // Inizializzazione di WebGazer
+        webgazer.setGazeChangeHandler(function(data) {
+            // Ottieni le coordinate dello sguardo in pixel
+            const x = data.x;
+            const y = data.y;
+
+            // Converti le coordinate in coordinate sferiche (semplificato)
+            // Nota: Questa è una conversione semplificata. Per una conversione più accurata, potresti dover considerare la proiezione utilizzata da Pannellum e altri fattori.
+            const viewport = viewer.getViewport();
+            const pitch = (y - viewport.height / 2) / (viewport.height / 2) * 90;
+            const yaw = (x - viewport.width / 2) / (viewport.width / 2) * 180;
+
+            // Controlla se lo sguardo è su un hotspot
+            hotspots.forEach(hotspot => {
+                const distance = Math.sqrt(Math.pow(pitch - hotspot.pitch, 2) + Math.pow(yaw - hotspot.yaw, 2));
+                if (distance < 10) { // Soglia di distanza arbitraria
+                    createPopup(hotspot.text);
+                }
+            });
+        }).begin();
+
+        // Inizializzazione di Pannellum
+        viewer = pannellum.viewer('panorama', {
+            "type": "equirectangular",
+            "panorama": "https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg",
+            "hotSpots": [
+                {
+                    "pitch": -10,
+                    "yaw": 10,
+                    "type": "custom",
+                    "text": "Hotspot 1",
+                    "className": "custom-hotspot"
+                },
+                // Aggiungi altri hotspot qui
+            ]
+        });
+
+        // Memorizza gli hotspot per un accesso più facile
+        hotspots = viewer.getHotSpots();
+
+        function createPopup(text) {
+            // ... (come prima)
+        }
+    </script>
+</body>
+</html>
