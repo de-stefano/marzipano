@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Piazza San Giacomo - VR</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <style>
+        .popup {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <h1>Panorama 360° con Hotspot e Gaze</h1>
+
+    <!-- A-Frame Scene -->
+    <a-scene>
+        <!-- A-Frame Sky (360° Image) -->
+        <a-sky src="https://de-stefano.github.io/audio-menu1/audio/piazza-san-giacomo.jpg" rotation="0 -90 0"></a-sky>
+
+        <!-- Hotspot 1 -->
+        <a-image src="https://de-stefano.github.io/audio-menu1/audio/icon-camera2.png"
+                 position="2 1 -3" width="1" height="1"
+                 look-at="#camera" id="hotspot1"
+                 event-set__mouseenter="_event: mouseenter; scale: 1.2 1.2 1"
+                 event-set__mouseleave="_event: mouseleave; scale: 1 1 1"
+                 class="clickable">
+        </a-image>
+
+        <!-- Hotspot 2 -->
+        <a-image src="https://de-stefano.github.io/img360/img-pannellum/icon-info.png"
+                 position="-2 1 -3" width="1" height="1"
+                 look-at="#camera" id="hotspot2"
+                 event-set__mouseenter="_event: mouseenter; scale: 1.2 1.2 1"
+                 event-set__mouseleave="_event: mouseleave; scale: 1 1 1"
+                 class="clickable">
+        </a-image>
+
+        <!-- Camera with Cursor (for gaze interaction) -->
+        <a-entity id="camera" camera look-controls>
+            <a-cursor fuse="true" fuse-timeout="1500" color="yellow"></a-cursor>
+        </a-entity>
+
+        <!-- Popup content (as a plane) -->
+        <a-plane id="popup1" position="0 1.5 -3" width="4" height="2"
+                 visible="false" color="white">
+            <a-text value="Hotspot 1: Informazioni sul primo hotspot."
+                    position="0 0.5 0" align="center" width="3"></a-text>
+        </a-plane>
+
+        <a-plane id="popup2" position="0 1.5 -3" width="4" height="2"
+                 visible="false" color="white">
+            <a-text value="Hotspot 2: Informazioni sul secondo hotspot."
+                    position="0 0.5 0" align="center" width="3"></a-text>
+        </a-plane>
+    </a-scene>
+
+    <script>
+        // Get references to the hotspots and popups
+        const hotspot1 = document.querySelector('#hotspot1');
+        const hotspot2 = document.querySelector('#hotspot2');
+        const popup1 = document.querySelector('#popup1');
+        const popup2 = document.querySelector('#popup2');
+
+        // Gaze interaction for hotspot 1
+        hotspot1.addEventListener('fusing', () => {
+            popup1.setAttribute('visible', 'true'); // Show popup1
+            popup2.setAttribute('visible', 'false'); // Hide other popup
+        });
+
+        // Gaze interaction for hotspot 2
+        hotspot2.addEventListener('fusing', () => {
+            popup2.setAttribute('visible', 'true'); // Show popup2
+            popup1.setAttribute('visible', 'false'); // Hide other popup
+        });
+
+        // Hide both popups initially
+        document.querySelectorAll('a-plane').forEach(popup => {
+            popup.setAttribute('visible', 'false');
+        });
+    </script>
+</body>
+</html>
