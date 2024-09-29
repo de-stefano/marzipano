@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VR Image Viewer</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .popup-content {
+            height: 200px;
+            overflow-y: scroll;
+        }
+        .scrollable {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        class VRImageViewer {
+            constructor(imageUrl, hotspots) {
+                this.imageUrl = imageUrl;
+                this.hotspots = hotspots;
+                this.viewerElement = null;
+                this.popupElement = null;
+            }
+
+            init() {
+                this.createViewer();
+                this.createHotspots();
+                this.createPopup();
+            }
+
+            createViewer() {
+                this.viewerElement = document.createElement('div');
+                this.viewerElement.style.width = '100%';
+                this.viewerElement.style.height = '500px';
+                this.viewerElement.style.backgroundImage = `url(${this.imageUrl})`;
+                this.viewerElement.style.backgroundSize = 'cover';
+                this.viewerElement.style.position = 'relative';
+                this.viewerElement.style.backgroundPosition = 'center';
+                document.body.appendChild(this.viewerElement);
+            }
+
+            createHotspots() {
+                this.hotspots.forEach(hotspot => {
+                    const hotspotElement = document.createElement('div');
+                    hotspotElement.style.position = 'absolute';
+                    hotspotElement.style.width = '40px';
+                    hotspotElement.style.height = '40px';
+                    hotspotElement.style.backgroundImage = `url(${hotspot.icon})`;
+                    hotspotElement.style.backgroundSize = 'contain';
+                    hotspotElement.style.cursor = 'pointer';
+                    hotspotElement.style.left = hotspot.x;
+                    hotspotElement.style.top = hotspot.y;
+                    
+                    // Trigger popup on click
+                    hotspotElement.addEventListener('click', () => {
+                        this.openPopup(hotspot.content);
+                    });
+
+                    this.viewerElement.appendChild(hotspotElement);
+                });
+            }
+
+            createPopup() {
+                this.popupElement = document.createElement('div');
+                this.popupElement.style.position = 'fixed';
+                this.popupElement.style.top = '50%';
+                this.popupElement.style.left = '50%';
+                this.popupElement.style.transform = 'translate(-50%, -50%)';
+                this.popupElement.style.backgroundColor = 'white';
+                this.popupElement.style.padding = '20px';
+                this.popupElement.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
+                this.popupElement.style.display = 'none';
+                this.popupElement.style.maxWidth = '500px';
+                this.popupElement.style.maxHeight = '300px';
+                this.popupElement.style.overflowY = 'auto';
+                document.body.appendChild(this.popupElement);
+
+                // Close popup when clicking outside
+                window.addEventListener('click', (event) => {
+                    if (event.target === this.popupElement) {
+                        this.closePopup();
+                    }
+                });
+            }
+
+            openPopup(content) {
+                this.popupElement.innerHTML = content;
+                this.popupElement.style.display = 'block';
+            }
+
+            closePopup() {
+                this.popupElement.style.display = 'none';
+            }
+        }
+
+        // Usage Example
+        const imageUrl = 'https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg';
+        const hotspots = [
+            {
+                x: '30%', y: '40%',
+                icon: 'https://de-stefano.github.io/solo-cartella/img-pannellum/icon-video1.png',
+                content: `<h2>Hotspot 1</h2>
+                          <img src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon.doc1.png" alt="Document" style="max-width: 100%;"><br>
+                          <div class="scrollable">
+                              <p>Testo lungo qui... (puoi aggiungere molto più testo se necessario, il contenuto sarà scorrevole).</p>
+                          </div>`
+            },
+            {
+                x: '70%', y: '60%',
+                icon: 'https://de-stefano.github.io/solo-cartella/img-pannellum/icon-video1.png',
+                content: `<h2>Hotspot 2</h2>
+                          <img src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon.doc1.png" alt="Document" style="max-width: 100%;"><br>
+                          <div class="scrollable">
+                              <p>Altro testo lungo qui... (puoi aggiungere molto più testo se necessario, il contenuto sarà scorrevole).</p>
+                          </div>`
+            }
+        ];
+
+        const vrViewer = new VRImageViewer(imageUrl, hotspots);
+        vrViewer.init();
+    </script>
+</body>
+</html>
