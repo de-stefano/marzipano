@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VR con Hotspot dinamici e Popup vicino</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+</head>
+<body>
+    <a-scene>
+        <!-- Immagine a 360 gradi -->
+        <a-sky src="https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg" rotation="0 -130 0"></a-sky>
+
+        <!-- Hotspot 1 -->
+        <a-image src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+            data-pitch="10" data-yaw="30" 
+            width="0.3" height="0.3"
+            class="hotspot">
+        </a-image>
+
+        <!-- Hotspot 2 -->
+        <a-image src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-info.png"
+            data-pitch="20" data-yaw="50" 
+            width="0.3" height="0.3"
+            class="hotspot">
+        </a-image>
+
+        <!-- Hotspot 3 -->
+        <a-image src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+            data-pitch="-10" data-yaw="-80"
+            width="0.3" height="0.3"
+            class="hotspot">
+        </a-image>
+
+        <!-- Popup dinamico -->
+        <a-entity id="popup-window" visible="false">
+            <a-plane color="#FFF" height="1.5" width="2" position="0 0 0.01"></a-plane>
+            <a-text value="Contenuto del popup" color="#000" align="center" width="1.8" position="0 0 0.02"></a-text>
+            <a-image src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+                position="0 0.8 0.01" width="0.2" height="0.2" class="close-hotspot">
+            </a-image>
+        </a-entity>
+
+        <!-- Camera e puntatore -->
+        <a-entity camera look-controls>
+            <a-cursor fuse="true" fuse-timeout="1000" color="blue" raycaster="objects: .hotspot, .close-hotspot"></a-cursor>
+        </a-entity>
+
+        <script>
+            // Funzione per calcolare la posizione x, y, z
+            const calculatePosition = (pitch, yaw, distance = 2) => {
+                const pitchRad = THREE.Math.degToRad(pitch);
+                const yawRad = THREE.Math.degToRad(yaw);
+
+                const x = distance * Math.sin(yawRad) * Math.cos(pitchRad);
+                const y = distance * Math.sin(pitchRad);
+                const z = -distance * Math.cos(yawRad) * Math.cos(pitchRad);
+
+                return { x, y, z };
+            };
+
+            const hotspots = document.querySelectorAll('.hotspot');
+            const popupWindow = document.querySelector('#popup-window');
+            const closeHotspot = document.querySelector('.close-hotspot');
+
+            // Posiziona dinamicamente gli hotspot
+            hotspots.forEach(hotspot => {
+                const pitch = parseFloat(hotspot.getAttribute('data-pitch'));
+                const yaw = parseFloat(hotspot.getAttribute('data-yaw'));
+
+                const { x, y, z } = calculatePosition(pitch, yaw);
+                hotspot.setAttribute('position', `${x} ${y} ${z}`);
+
+                // Mostra il popup vicino all'hotspot attivato
+                hotspot.addEventListener('mouseenter', function () {
+                    popupWindow.setAttribute('position', `${x} ${y + 0.5} ${z}`);
+                    popupWindow.setAttribute('visible', 'true');
+                });
+            });
+
+            // Chiude il popup
+            closeHotspot.addEventListener('mouseenter', function () {
+                popupWindow.setAttribute('visible', 'false');
+            });
+        </script>
+    </a-scene>
+</body>
+</html>
