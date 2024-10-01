@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VR Immagine 360°, Pop-up con Gaze e Hotspot Dinamico</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r121/three.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+      <!-- Caricamento dell'immagine a 360 gradi -->
+      <a-sky src="https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg" rotation="0 -130 0"></a-sky>
+
+      <!-- Hotspot 1 -->
+      <a-image
+        id="hotspot1"
+        src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+        width="0.3"
+        height="0.3"
+        class="hotspot"
+        data-pitch="30"
+        data-yaw="45"
+        data-popup="popup1"
+      ></a-image>
+
+      <!-- Hotspot 2 -->
+      <a-image
+        id="hotspot2"
+        src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+        width="0.3"
+        height="0.3"
+        class="hotspot"
+        data-pitch="15"
+        data-yaw="-100"
+        data-popup="popup2"
+      ></a-image>
+
+      <!-- Hotspot 3 -->
+      <a-image
+        id="hotspot3"
+        src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+        width="0.3"
+        height="0.3"
+        class="hotspot"
+        data-pitch="0"
+        data-yaw="120"
+        data-popup="popup3"
+      ></a-image>
+
+      <!-- Finestra di popup per Hotspot 1 -->
+      <a-entity id="popup1" visible="false" position="0 1.5 -2">
+        <a-plane color="#FFF" height="1.5" width="2"></a-plane>
+        <a-text
+          value="Contenuto del popup 1"
+          position="-0.9 0.6 0.01"
+          width="1.8"
+          color="#000000"
+          align="left"
+          wrap-count="30"
+        ></a-text>
+        <a-image
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-arrow-down1.png"
+          position="0 -0.6 0.01"
+          width="1"
+          height="0.5"
+        ></a-image>
+        <a-image
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+          position="0 0.8 0.01"
+          width="0.2"
+          height="0.2"
+          class="close-hotspot"
+        ></a-image>
+      </a-entity>
+
+      <!-- Finestra di popup per Hotspot 2 -->
+      <a-entity id="popup2" visible="false" position="0 1.5 -2">
+        <a-plane color="#FFF" height="1.5" width="2"></a-plane>
+        <a-text
+          value="Contenuto del popup 2"
+          position="-0.9 0.6 0.01"
+          width="1.8"
+          color="#000000"
+          align="left"
+          wrap-count="30"
+        ></a-text>
+        <a-image
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-arrow-down1.png"
+          position="0 -0.6 0.01"
+          width="1"
+          height="0.5"
+        ></a-image>
+        <a-image
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+          position="0 0.8 0.01"
+          width="0.2"
+          height="0.2"
+          class="close-hotspot"
+        ></a-image>
+      </a-entity>
+
+      <!-- Finestra di popup per Hotspot 3 -->
+      <a-entity id="popup3" visible="false" position="0 1.5 -2">
+        <a-plane color="#FFF" height="1.5" width="2"></a-plane>
+        <a-text
+          value="Contenuto del popup 3"
+          position="-0.9 0.6 0.01"
+          width="1.8"
+          color="#000000"
+          align="left"
+          wrap-count="30"
+        ></a-text>
+        <a-image
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-arrow-down1.png"
+          position="0 -0.6 0.01"
+          width="1"
+          height="0.5"
+        ></a-image>
+        <a-image
+          src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+          position="0 0.8 0.01"
+          width="0.2"
+          height="0.2"
+          class="close-hotspot"
+        ></a-image>
+      </a-entity>
+
+      <!-- Puntatore visivo -->
+      <a-entity camera look-controls>
+        <a-cursor fuse="true" fuse-timeout="1000" color="blue"></a-cursor>
+      </a-entity>
+    </a-scene>
+
+    <script>
+      // Funzione per calcolare la posizione x, y, z
+      const calculatePosition = (pitch, yaw) => {
+        const radius = 3; // Distanza dalla camera
+        const pitchRad = THREE.MathUtils.degToRad(pitch);
+        const yawRad = THREE.MathUtils.degToRad(yaw);
+
+        const x = radius * Math.sin(pitchRad) * Math.cos(yawRad);
+        const y = radius * Math.cos(pitchRad);
+        const z = radius * Math.sin(pitchRad) * Math.sin(yawRad);
+
+        return { x, y, z };
+      };
+
+      // Trova tutti gli hotspot e imposta la posizione dinamica
+      const hotspots = document.querySelectorAll(".hotspot");
+      hotspots.forEach((hotspot) => {
+        const pitch = hotspot.getAttribute("data-pitch");
+        const yaw = hotspot.getAttribute("data-yaw");
+        const { x, y, z } = calculatePosition(pitch, yaw);
+        hotspot.setAttribute("position", `${x} ${y} ${z}`);
+      });
+
+      const popupWindow = document.querySelector("#popup-window");
+
+      // Logica per mostrare e chiudere i popup
+      hotspots.forEach((hotspot) => {
+        hotspot.addEventListener("mouseenter", function () {
+          // Chiudi tutti i popup prima di aprire quello corretto
+          const allPopups = document.querySelectorAll("a-entity[visible='true']");
+          allPopups.forEach((popup) => popup.setAttribute("visible", "false"));
+
+          // Mostra il popup associato all'hotspot
+          const popupId = this.getAttribute("data-popup");
+          document.querySelector(`#${popupId}`).setAttribute("visible", "true");
+        });
+      });
+
+      // Logica per chiudere il popup quando si guarda il bottone di chiusura
+      const closeButtons = document.querySelectorAll(".close-hotspot");
+      closeButtons.forEach((button) => {
+        button.addEventListener("mouseenter", function () {
+          const popup = this.closest("a-entity");
+          popup.setAttribute("visible", "false");
+        });
+      });
+    </script>
+  </body>
+</html>
