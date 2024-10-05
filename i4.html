@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VR Immagine 360°, Pop-up con Link</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+</head>
+<body>
+    <a-scene>
+        <!-- Immagine 360° -->
+        <a-sky src="https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg" rotation="0 -130 0"></a-sky>
+
+        <!-- Hotspot 1 -->
+        <a-image
+            id="hotspot1"
+            src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+            width="0.3"
+            height="0.3"
+            class="hotspot"
+            position="4 2 -5"
+            rotation="0 45 0"
+        ></a-image>
+
+        <!-- Finestra di popup con un messaggio -->
+        <a-entity id="popup-window" visible="false" position="0 1.5 -2">
+            <a-plane color="#FFF" height="3" width="4"></a-plane>
+
+            <!-- Testo del popup -->
+            <a-text
+                id="popup-text"
+                value="Stai per aprire una nuova scheda!"
+                align="center"
+                position="0 0 0.1"
+                color="#000"
+            ></a-text>
+
+            <!-- Pulsante di chiusura -->
+            <a-image
+                src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-close-m.png"
+                position="1.7 1 0.01"
+                width="0.3"
+                height="0.3"
+                class="close-hotspot"
+            ></a-image>
+        </a-entity>
+
+        <!-- Puntatore visivo -->
+        <a-entity camera look-controls>
+            <a-cursor
+                fuse="true"
+                fuse-timeout="1000"
+                color="blue"
+                raycaster="objects: .hotspot, .close-hotspot"
+            ></a-cursor>
+        </a-entity>
+
+        <script>
+            const hotspots = [
+                {
+                    element: document.querySelector("#hotspot1"),
+                    url: "https://de-stefano.github.io/img360/popup.html",  // URL da aprire per Hotspot 1
+                },
+            ];
+
+            const popupWindow = document.querySelector("#popup-window");
+            const camera = document.querySelector('[camera]');
+
+            function setPositionAndRotationNearHotspot(hotspot) {
+                const hotspotPosition = hotspot.getAttribute("position");
+                const offset = { x: 0, y: 0.5, z: 0.5 };
+                
+                const newPosition = {
+                    x: parseFloat(hotspotPosition.x) + offset.x,
+                    y: parseFloat(hotspotPosition.y) + offset.y,
+                    z: parseFloat(hotspotPosition.z) + offset.z,
+                };
+
+                popupWindow.setAttribute("position", `${newPosition.x} ${newPosition.y} ${newPosition.z}`);
+
+                const cameraPosition = camera.getAttribute('position');
+                const dx = cameraPosition.x - newPosition.x;
+                const dz = cameraPosition.z - newPosition.z;
+                const angleY = Math.atan2(dx, dz) * (180 / Math.PI); 
+
+                popupWindow.setAttribute('rotation', `0 ${angleY} 0`);
+            }
+
+            hotspots.forEach(hotspot => {
+                hotspot.element.addEventListener("mouseenter", function () {
+                    setPositionAndRotationNearHotspot(hotspot.element);
+
+                    // Mostra il popup con messaggio
+                    popupWindow.setAttribute("visible", "true");
+
+                    // Apre una nuova finestra popup di dimensioni 600x600
+                    setTimeout(function () {
+                        window.open(hotspot.url, "_blank", "width=600,height=600");
+                    }, 2000); // Apertura dopo 2 secondi
+
+                    const closeButton = popupWindow.querySelector(".close-hotspot");
+                    closeButton.addEventListener("mouseenter", function () {
+                        popupWindow.setAttribute("visible", "false");
+                    });
+                });
+            });
+        </script>
+    </a-scene>
+</body>
+</html>
