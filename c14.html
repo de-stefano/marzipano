@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VR Immagine 360°, Pop-up con Gaze e Hotspot</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <style>
+        a-text {
+            color: black;
+            font-size: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <a-scene>
+        <a-sky src="https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg" rotation="0 -130 0"></a-sky>
+
+        <!-- Hotspot 1 -->
+        <a-image
+            id="hotspot1"
+            src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+            width="0.3"
+            height="0.3"
+            class="hotspot"
+            position="1 1 -3"
+            rotation="0 45 0"
+        ></a-image>
+
+        <!-- Hotspot 2 -->
+        <a-image
+            id="hotspot2"
+            src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+            width="0.3"
+            height="0.3"
+            class="hotspot"
+            position="-3 1 -2"
+            rotation="0 -135 0"
+        ></a-image>
+
+        <!-- Hotspot 3 -->
+        <a-image
+            id="hotspot3"
+            src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+            width="0.3"
+            height="0.3"
+            class="hotspot"
+            position="2 1.5 -4"
+            rotation="0 90 0"
+        ></a-image>
+
+        <!-- Finestra di popup -->
+        <a-entity id="popup-window" visible="false" position="0 1.5 -2">
+            <a-plane color="#FFF" height="1.5" width="2"></a-plane>
+            <a-text
+                id="popup-text"
+                position="-0.9 0.6 0.01"
+                width="1.8"
+                value="Questo è un esempio di testo lungo."
+                color="#000000"
+                align="left"
+                wrap-count="30"
+            ></a-text>
+            <a-image
+                id="popup-image" <!-- Aggiungi un ID per l'immagine di prova -->
+                src="" 
+                position="0 0 0.01"
+                width="1"
+                height="1"
+            ></a-image>
+            <a-image
+                src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-close-m.png"
+                position="0 0.8 0.01"
+                width="0.4"
+                height="0.4"
+                class="close-hotspot"
+            ></a-image>
+        </a-entity>
+
+        <!-- Puntatore visivo -->
+        <a-entity camera look-controls>
+            <a-cursor
+                fuse="true"
+                fuse-timeout="1000"
+                color="blue"
+                raycaster="objects: .hotspot, .close-hotspot"
+            ></a-cursor>
+        </a-entity>
+
+        <script>
+            const hotspots = [
+                {
+                    element: document.querySelector("#hotspot1"),
+                    text: "Questo è il primo hotspot con un'immagine.",
+                    image: "https://via.placeholder.com/150/FF0000/FFFFFF?text=Immagine+1", // Immagine 1
+                },
+                {
+                    element: document.querySelector("#hotspot2"),
+                    text: "Questo è il secondo hotspot solo con testo.", // Solo testo
+                    image: "", // Nessuna immagine
+                },
+                {
+                    element: document.querySelector("#hotspot3"),
+                    text: "Questo è il terzo hotspot con testo e un'immagine.",
+                    image: "https://via.placeholder.com/150/0000FF/FFFFFF?text=Immagine+3", // Immagine 3
+                },
+            ];
+
+            const popupWindow = document.querySelector("#popup-window");
+            const popupImage = popupWindow.querySelector("#popup-image");
+
+            // Funzione per impostare la posizione del popup vicino all'hotspot attivato
+            function setPositionNearHotspot(hotspot) {
+                const hotspotPosition = hotspot.getAttribute("position");
+                
+                // Aggiungi un offset per posizionare il popup vicino all'hotspot
+                const offset = { x: 0, y: 0.5, z: 0.5 };
+                
+                const newPosition = {
+                    x: parseFloat(hotspotPosition.x) + offset.x,
+                    y: parseFloat(hotspotPosition.y) + offset.y,
+                    z: parseFloat(hotspotPosition.z) + offset.z,
+                };
+                
+                // Imposta la nuova posizione per il popup
+                popupWindow.setAttribute("position", `${newPosition.x} ${newPosition.y} ${newPosition.z}`);
+            }
+
+            // Aggiungi l'evento mouseenter per ciascun hotspot
+            hotspots.forEach(hotspot => {
+                hotspot.element.addEventListener("mouseenter", function () {
+                    const text = hotspot.text;
+                    const closeButton = popupWindow.querySelector(".close-hotspot");
+
+                    // Imposta il testo della finestra popup
+                    popupWindow.querySelector("#popup-text").setAttribute("value", text);
+
+                    // Imposta l'immagine della finestra popup
+                    if (hotspot.image) {
+                        popupImage.setAttribute("src", hotspot.image); // Imposta l'immagine in base all'hotspot
+                        popupImage.setAttribute("visible", "true"); // Mostra l'immagine se esiste
+                    } else {
+                        popupImage.setAttribute("visible", "false"); // Nascondi l'immagine se non esiste
+                    }
+
+                    // Imposta la posizione del popup vicino all'hotspot
+                    setPositionNearHotspot(hotspot.element);
+
+                    // Mostra il popup
+                    popupWindow.setAttribute("visible", "true");
+
+                    // Chiudi il popup quando si guarda l'icona di chiusura
+                    closeButton.addEventListener("mouseenter", function () {
+                        popupWindow.setAttribute("visible", "false");
+                    });
+                });
+            });
+        </script>
+    </a-scene>
+</body>
+</html>
