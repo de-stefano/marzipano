@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VR Immagine 360°, Pop-up con Gaze e Hotspot</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <style>
+        a-text {
+            color: black;
+            font-size: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <a-scene>
+        <a-sky src="https://de-stefano.github.io/solo-cartella/img-pannellum/piazza-san-giacomo.jpg" rotation="0 -130 0"></a-sky>
+
+        <!-- Hotspot 1 -->
+        <a-image
+            id="hotspot1"
+            src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+            width="0.3"
+            height="0.3"
+            class="hotspot"
+            position="4 2 -5"
+            rotation="0 45 0"
+        ></a-image>
+
+        <!-- Hotspot 2 -->
+        <a-image
+            id="hotspot2"
+            src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+            width="0.3"
+            height="0.3"
+            class="hotspot"
+            position="-3 1 -2"
+            rotation="0 -135 0"
+        ></a-image>
+
+        <!-- Hotspot 3 -->
+        <a-image
+            id="hotspot3"
+            src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-camera2.png"
+            width="0.3"
+            height="0.3"
+            class="hotspot"
+            position="2 1.5 -4"
+            rotation="0 90 0"
+        ></a-image>
+
+        <!-- Finestra di popup -->
+        <a-entity id="popup-window" visible="false" position="0 1.5 -2">
+            <a-plane color="#FFF" height="4" width="5" material="shader: flat;" cast-shadow="false"></a-plane>
+
+            <!-- Testo -->
+            <a-text
+                id="popup-text"
+                position="-1.8 1.4 0.01"
+                width="3.6"
+                value="Questo è un esempio di testo lungo. Scorri per vedere più contenuto."
+                color="#000000"
+                align="left"
+                wrap-count="40"
+            ></a-text>
+
+            <!-- Immagine dinamica -->
+            <a-image
+                id="popup-image"
+                src="" 
+                position="0 0 0.01"
+                width="1" 
+                height="1" 
+                visible="false"
+            ></a-image>
+
+            <!-- Iframe per video -->
+            <a-entity
+                id="popup-video"
+                position="0 0 -0.01"
+                visible="false"
+                geometry="primitive: plane; width: 2; height: 1.5;"
+                material="shader: flat; src: #video-iframe;"
+            >
+                <a-entity
+                    id="video-iframe"
+                    geometry="primitive: plane; width: 2; height: 1.5;"
+                    material="shader: flat; src: https://www.youtube.com/embed/YOUR_VIDEO_ID; transparent: true; opacity: 0.5;"
+                ></a-entity>
+            </a-entity>
+
+            <!-- Pulsante di chiusura -->
+            <a-image
+                src="https://de-stefano.github.io/solo-cartella/img-pannellum/icon-close-m.png"
+                position="1.9 2.3 0.01"
+                width="0.4"
+                height="0.4"
+                class="close-hotspot"
+            ></a-image>
+        </a-entity>
+
+        <!-- Puntatore visivo -->
+        <a-entity camera look-controls>
+            <a-cursor
+                fuse="true"
+                fuse-timeout="1000"
+                color="blue"
+                raycaster="objects: .hotspot, .close-hotspot"
+            ></a-cursor>
+        </a-entity>
+
+        <script>
+            const hotspots = [
+                {
+                    element: document.querySelector("#hotspot1"),
+                    text: "Questo è il primo hotspot con un'immagine.",
+                    image: "https://de-stefano.github.io/solo-cartella/img-pannellum/testo6-m.JPG", // Immagine per hotspot 1
+                    width: 4.5,  // Larghezza dell'immagine
+                    height: 3.5,   // Altezza dell'immagine
+                },
+                {
+                    element: document.querySelector("#hotspot2"),
+                    text: "Questo è il secondo hotspot con un video di YouTube.",
+                    image: "", // Nessuna immagine per hotspot 2
+                    video: "dQw4w9WgXcQ", // ID del video di YouTube
+                },
+                {
+                    element: document.querySelector("#hotspot3"),
+                    text: "Questo è il terzo hotspot con testo e un'immagine.",
+                    image: "https://de-stefano.github.io/solo-cartella/img-pannellum/testo7.JPG", // Immagine per hotspot 3
+                    width: 4.5,   // Larghezza dell'immagine
+                    height: 3.5, // Altezza dell'immagine
+                },
+            ];
+
+            const popupWindow = document.querySelector("#popup-window");
+            const camera = document.querySelector('[camera]');
+
+            // Funzione per impostare la posizione del popup vicino all'hotspot attivato
+            function setPositionAndRotationNearHotspot(hotspot) {
+                const hotspotPosition = hotspot.getAttribute("position");
+                const offset = { x: 0, y: 0.5, z: 0.5 };
+                
+                const newPosition = {
+                    x: parseFloat(hotspotPosition.x) + offset.x,
+                    y: parseFloat(hotspotPosition.y) + offset.y,
+                    z: parseFloat(hotspotPosition.z) + offset.z,
+                };
+
+                popupWindow.setAttribute("position", `${newPosition.x} ${newPosition.y} ${newPosition.z}`);
+
+                const cameraPosition = camera.getAttribute('position');
+                const dx = cameraPosition.x - newPosition.x;
+                const dz = cameraPosition.z - newPosition.z;
+                const angleY = Math.atan2(dx, dz) * (180 / Math.PI);
+
+                popupWindow.setAttribute('rotation', `0 ${angleY} 0`);
+            }
+
+            hotspots.forEach(hotspot => {
+                hotspot.element.addEventListener("mouseenter", function () {
+                    const text = hotspot.text;
+                    const closeButton = popupWindow.querySelector(".close-hotspot");
+                    const popupImage = popupWindow.querySelector("#popup-image");
+                    const popupVideo = popupWindow.querySelector("#popup-video");
+
+                    popupWindow.querySelector("#popup-text").setAttribute("value", text);
+                    setPositionAndRotationNearHotspot(hotspot.element);
+
+                    // Mostra o nascondi l'immagine o il video in base alla presenza di un URL
+                    if (hotspot.image) {
+                        popupImage.setAttribute("src", hotspot.image);
+                        popupImage.setAttribute("visible", "true");
+                        popupImage.setAttribute("width", hotspot.width);
+                        popupImage.setAttribute("height", hotspot.height);
+                        popupVideo.setAttribute("visible", "false");
+                    } else if (hotspot.video) {
+                        popupVideo.setAttribute("visible", "true");
+                        popupVideo.querySelector("#video-iframe").setAttribute("material", "src", `https://www.youtube.com/embed/${hotspot.video}`);
+                        popupImage.setAttribute("visible", "false");
+                    } else {
+                        popupImage.setAttribute("visible", "false");
+                        popupVideo.setAttribute("visible", "false");
+                    }
+
+                    popupWindow.setAttribute("visible", "true");
+
+                    closeButton.addEventListener("mouseenter", function () {
+                        popupWindow.setAttribute("visible", "false");
+                    });
+                });
+            });
+        </script>
+    </a-scene>
+</body>
+</html>
