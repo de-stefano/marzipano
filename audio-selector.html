@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Selector</title>
+    <style>
+        /* Nasconde i player audio */
+        audio {
+           diplay: none;
+        }
+
+        /* Stili per il menu a tendina */
+        #audioSelector {
+            background-color: white; /* Colore di sfondo bianco */
+            color: red; /* Colore del testo rosso */
+            border-radius: 10px; /* Bordi arrotondati */
+            padding: 5px; /* Aggiunge spazio interno */
+            border: 2px solid red; /* Bordo rosso */
+            font-size: 16px; /* Dimensione del testo */
+        }
+
+        /* Mantieni il bordo rosso e il testo rosso quando è selezionato */
+        #audioSelector:focus {
+            border-color: red; /* Colore del bordo rosso quando è in focus */
+            outline: none; /* Rimuove il bordo di default del focus */
+        }
+
+        #audioSelector option {
+            color: red; /* Colore del testo rosso all'interno delle opzioni */
+        }
+    </style>
+</head>
+<body>
+
+<h2>Seleziona un audio</h2>
+
+<select id="audioSelector" onchange="handleAudioSelection()">
+    <option value="none">Nessun audio</option>
+    <option value="audio1">Audio 1</option>
+    <option value="audio2">Audio 2</option>
+    <option value="audio3">Audio 3</option>
+</select>
+
+<audio id="audio1">
+    <source src="https://de-stefano.github.io/audio-menu1/audio/bocca.mp3" type="audio/mpeg">
+    Il tuo browser non supporta l'elemento audio.
+</audio>
+
+<audio id="audio2">
+    <source src="https://de-stefano.github.io/audio-menu1/audio/sting.mp3" type="audio/mpeg">
+    Il tuo browser non supporta l'elemento audio.
+</audio>
+
+<audio id="audio3">
+    <source src="https://drive.google.com/file/d/19TXpSyC0s_JscyG4RjCOijPjVnu6BngH/view?usp=sharing" type="audio/mpeg">
+    Il tuo browser non supporta l'elemento audio.
+</audio>
+
+<script>
+    // Funzione per gestire la selezione dell'audio
+    function handleAudioSelection() {
+        // Otteniamo il valore selezionato
+        var selectedAudio = document.getElementById("audioSelector").value;
+
+        // Recupera tutti gli elementi audio
+        var audios = document.querySelectorAll("audio");
+
+        // Ferma e silenzia tutti gli audio
+        audios.forEach(function(audio) {
+            audio.pause();
+            audio.currentTime = 0;
+        });
+
+        // Se un audio diverso da "nessun audio" è selezionato, riproducilo
+        if (selectedAudio !== "none") {
+            document.getElementById(selectedAudio).play();
+        }
+    }
+</script>
+
+</body>
+</html>
