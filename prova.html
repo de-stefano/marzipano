@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Progetto VR</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <!-- Scena A-Frame -->
+    <a-scene>
+      <!-- Aggiungiamo un cursore oculare per interagire con gli elementi -->
+      <a-entity camera position="0 1.6 0">
+        <a-cursor
+          fuse="true"
+          fuse-timeout="1000"
+          color="blue"
+          raycaster="objects: .cursor-target"
+        ></a-cursor>
+      </a-entity>
+
+      <!-- Un semplice ambiente per testare il VR -->
+      <a-sky color="#ECECEC"></a-sky>
+
+      <!-- Oggetti nella scena -->
+      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
+      <a-sphere position="1 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
+      <a-cylinder position="0 0.75 -7" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
+      <a-plane
+        position="0 0 -4"
+        rotation="-90 0 0"
+        width="4"
+        height="4"
+        color="#7BC8A4"
+      ></a-plane>
+
+      <!-- Inserimento pulsante VR (generato automaticamente da A-Frame) -->
+      <a-entity id="custom-vr-button"></a-entity>
+    </a-scene>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Cerca il pulsante VR generato automaticamente da A-Frame
+        const vrButton = document.querySelector(".a-enter-vr");
+        if (vrButton) {
+          vrButton.click(); // Simula il clic per entrare in modalità VR
+        }
+      });
+    </script>
+  </body>
+</html>
